@@ -8,17 +8,21 @@ from attel.dogen import dogen_gen
 
 CHANNEL_CONFIG = {
     'name': 'chA',
-    'start': 10000,
-    'duration': {'start': 20000, 'stop': 30000},
+    'start': {'start': 2000, 'stop': 12000, 'step': 2000},
+    'duration': {'start': 20000, 'stop': 30000, 'step': 2000},
     'step': 1000,
     'count': 5,
     'fields': [
         {'name': 'time_ms',
          'fun': dogen_gen.GetCurrentTimeMs},
-        {'name': 'xval',
+        {'name': 'yval',
          'fun': functools.partial(
              dogen_gen.GenerateNextInRange,
              {'start': 100, 'step': 10})},
+        {'name': 'yv2',
+         'fun': functools.partial(
+             dogen_gen.GenerateRandomInRange,
+             {'start': 100, 'stop': 400})},
     ]}
 
 CHANNEL_CONFIGS = [CHANNEL_CONFIG]
