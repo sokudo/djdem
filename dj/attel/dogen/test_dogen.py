@@ -60,7 +60,8 @@ class ChannelRunnerTestCase(unittest.TestCase):
     self.output[ent['chId']].append(ent)
 
   def testOneChannel(self):
-    runner = dogen_gen.ChannelRunner([self.CHANNEL_DATA[0]], self.OutHandler)
+    runner = dogen_gen.ChannelRunner()
+    runner.AddChannel(self.CHANNEL_DATA[0], self.OutHandler)
     ii = 1
     for time_ms in xrange(10000, 30000, 1000):
       dogen_gen.SetCurrentTimeMs(time_ms)
@@ -77,7 +78,9 @@ class ChannelRunnerTestCase(unittest.TestCase):
 
   def testChannels(self):
 
-    runner = dogen_gen.ChannelRunner(self.CHANNEL_DATA, self.OutHandler)
+    runner = dogen_gen.ChannelRunner(self.OutHandler)
+    for d in self.CHANNEL_DATA:
+      runner.AddChannel(d)
     for time_ms in xrange(0, 31000, 500):
       dogen_gen.SetCurrentTimeMs(time_ms)
       runner.RunTill(time_ms)

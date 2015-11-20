@@ -28,7 +28,7 @@ CHANNEL_CONFIG = {
 CHANNEL_CONFIGS = [CHANNEL_CONFIG]
 
 
-def Run(channelConfigList, outHandler, realTime=False):
+def _Run(channelConfigList, outHandler, realTime=False):
   """Runs channels.
 
   Args:
@@ -36,7 +36,9 @@ def Run(channelConfigList, outHandler, realTime=False):
     outHandler: callable, Called with produced channel messages.
     realTime: bool, Emulate real time run.
   """
-  runner = dogen_gen.ChannelRunner(channelConfigList, outHandler)
+  runner = dogen_gen.ChannelRunner(outHandler)
+  for descr in channelConfigList:
+    runner.AddChannel(descr)
   time_ms = 0
   while not runner.IsEmpty():
     dogen_gen.SetCurrentTimeMs(time_ms)
@@ -53,8 +55,8 @@ class DataCollector(object):
     # Channel id to list of data entities map.
     self.channel_map = collections.defaultdict(list)
 
-  def Add(self, entity):
-    self.channel_map[entity['chId']].append(entity)
+  def Add(self, point):
+    self.channel_map[point['chId']].append(point)
 
   def GetAll(self):
     return self.channel_map
@@ -92,4 +94,4 @@ class DataCollector(object):
 
 
 if __name__ == '__main__':
-  Run(CHANNEL_CONFIGS, pprint.pprint)
+  _Run(CHANNEL_CONFIGS, pprint.pprint)

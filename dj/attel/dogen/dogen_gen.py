@@ -24,6 +24,8 @@
 import random
 import Queue
 
+from attel.util import utils_base
+
 
 _CurrentTimeMs = 0
 
@@ -89,16 +91,20 @@ def GetNextTimeMs(channel):
 
 
 class ChannelRunner(object):
-  def __init__(self, descrSeq, sender):
+  __metaclass__ = utils_base.Singleton
+
+  def __init__(self, sender=None):
     self.channelQueue = Queue.PriorityQueue()
-    self.sender = sender
-    chIdBase = 0
-    for descr in descrSeq:
-      for channel in CreateChannels(chIdBase, descr):
-        chIdBase += 1
-        next_ms = GetNextTimeMs(channel)
-        if next_ms is not None:
-          self.channelQueue.put((next_ms, channel))
+    self.sender = sender or id
+    self.chIdBase = 0
+
+  def AddChannel(self, genDescr, callback=None):
+    for channel in CreateChannels(self.chIdBase, genDescr):
+      channel['callback'] = callback or id
+      self.chIdBase += 1
+      next_ms = GetNextTimeMs(channel)
+      if next_ms is not None:
+        self.channelQueue.put((next_ms, channel))
 
   def IsEmpty(self):
     return self.channelQueue.empty()
@@ -113,6 +119,7 @@ class ChannelRunner(object):
         point = GenerateChannelData(channel)
         channel['prevPoint'] = point
         self.sender(point)
+        channel['callback'](point)
         next_ms = GetNextTimeMs(channel)
         if next_ms is not None:
           self.channelQueue.put((next_ms, channel))
