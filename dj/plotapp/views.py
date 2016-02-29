@@ -55,7 +55,7 @@ class Plotter(object):
 
   def StartPlotter(self, request=None):
     self.dataCollector = dogen_data.DataCollector()
-    self.runner = dogen_data.Run(
+    self.runner = dogen_data._Run(
         dogen_data.CHANNEL_CONFIGS, self.dataCollector.Add, realTime=False)
     return HttpResponse('Ok')
 
